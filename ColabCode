@@ -1,1 +1,71 @@
 https://colab.research.google.com/drive/13ZQXmGL4U5RqIJyy4Qs-d99anJfHFXTc?authuser=1#scrollTo=AlNK4MuIW13W
+
+Want to leverage advanced NLP to calculate sentiment?
+
+Can't be bothered building a model from scratch?
+
+Transformers allows you to easily leverage a pre-trained BERT neural network to do exactly that!
+
+In this video we'll go through how to get up and running with Hugging Face Transformers and BERT to be able to calculate sentiment. We'll run the model using a single prompt but also leverage BeautifulSoup to scrape reviews from Yelp to be able to calculate sentiment on a larger scale. 
+
+In this video you'll learn how to: 
+1. Install Transformers
+2. Perform Sentiment Scoring using BERT and Python
+3. Scrape reviews from Yelp and Calculate their Sentiment
+
+Get the code for this tutorial: https://github.com/nicknochnack/BERTS...
+ 
+ 
+•	Install Pytorch for the specific OS
+•	Install Transformer model from HuggingFace Transformers
+o	Transformers to download nlptown/bert-base-multilingual-uncased-sentiment
+	This a bert-base-multilingual-uncased model finetuned for sentiment analysis on product reviews in six languages: English, Dutch, German, French, Spanish and Italian. It predicts the sentiment of the review as a number of stars (between 1 and 5).
+o	requests : Is for scraping the reviews in Yelp site
+o	beautifulsoup4 : Work through the soup that will be returned from the Yelp page and helps to extract the data that we actually need
+o	pandas : helps to structure our data into a format to make it easy to work with
+o	numpy : For additional Data Transformation processes
+•	Import
+o	AutoTokenizer : Tokenizer converts a string to numbers and we can pass it to NLP model
+o	AutoModelForSequenceClassification : Gives the architecture for transformers to load in our NLP model
+o	Torch : For PyTorch to use argmax function to extract highest sequence results
+o	Request : to scrape data
+o	Beautifulsoup: Traverse DOM data and extract the reviews back from yelp page
+o	Re : Creates a Regex function in order to extract the specific comments that we want
+
+•	Instantiate the model:
+o	tokenizer = AutoTokenizer.from_pretrained('nlptown/bert-base-multilingual-uncased-sentiment')
+	Create the tokenizer
+o	model = AutoModelForSequenceClassification.from_pretrained('nlptown/bert-base-multilingual-uncased-sentiment')
+	Load the Model
+•	Encode and Calculate Sentiment
+o	tokens = tokenizer.encode('It was good but couldve been better. Great', return_tensors='pt')
+	pass the sentence and then pass the keyword argument which is converting the tenors to pytorch(pt)
+	Gives the encoded string
+o	Pass the token to the model = result
+o	Result will give Logits output
+tensor([[-2.7768, -1.2353,  1.4419,  1.9804,  0.4584]],
+       grad_fn=<AddmmBackward>)
+	Number values represents the probability of that particular class being the sentiment in order  4 -3-2-1-0  in Pytorch
+	To convert these numbers to useful information we use torch.argmax(result.logits) to give the sentiment score  4
+
+•	Collect Reviews
+o	Collect reviews from yelp – web scraping
+o	All the reviews are called by the class name “Comments”
+ 
+o	Use Regex to extract the classes with comments extension 
+o	r = requests.get('https://www.yelp.com/biz/social-brew-cafe-pyrmont') 
+	Requests to extract all the texts from the web link
+o	soup = BeautifulSoup(r.text, 'html.parser')
+	pass the r.text to beautifulsoup and setting to html.parser
+o	regex = re.compile('.*comment.*')
+	Extract the specific components from the web link
+o	results = soup.find_all('p', {'class':regex})
+	find_all to find paragraph tag and review contents through regex specified
+	s
+o	reviews = [result.text for result in results]
+ 
+
+Colab: https://colab.research.google.com/drive/13ZQXmGL4U5RqIJyy4Qs-d99anJfHFXTc?authuser=1#scrollTo=rwnDN64yW13n
+
+Source: https://www.youtube.com/watch?v=szczpgOEdXs
+
